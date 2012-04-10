@@ -1,29 +1,29 @@
-.text
-.global start
-.code16
+.text				#code segment
+.global start		#
+.code16				#real model
 start:
 jmp code
 msg:
-.string "hello world\x0"
+.string "hello world \x0"
 code:
-movw $0xb800,%ax
-movw %ax,%es
+movw $0xb800,%ax	# CGA address
+movw %ax,%es		# es point to cga address
 
 xorw %ax,%ax
-movw %ax,%ds
+movw %ax,%ds		# ds=0
 
 movw $msg,%si
 xorw %di,%di
-cld
-movb $0x07,%al
+cld					# CLear Direction flag,foward now
+movb $0x02,%al		# set color green
 
-1:
+beg:
 cmp $0,(%si)
-je 1f
-movsb
-stosb
-jmp 1b
-1:jmp 1b
+je end
+movsb				# MOVe String Byte,ds:si->es:di	
+stosb				# every char need 2 bytes,followed by the color
+jmp beg
+end: jmp end		# forever loop
 
-.org 0x1fe,0x90
-.word 0xaa55
+.org 0x1fe,0x90		# 0x90 for nop
+.word 0xaa55		# Bootable end flag
